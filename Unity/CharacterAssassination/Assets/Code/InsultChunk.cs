@@ -10,7 +10,8 @@ public class InsultChunk : MonoBehaviour {
 	public float onScreenTime; 
 	public Gradient damageRange; 
 	public float maxDamage;
-	public bool isMultiplier; 
+	public bool isMultiplier;
+	public float delayMax = 2f ;
 	float _damamgeToDeal; 
 
 
@@ -31,11 +32,12 @@ public class InsultChunk : MonoBehaviour {
 		}
 	}
 	public void AssignValues(FallingInsult _falling){
-		_falling.SetValues (damageRange, onScreenTime, maxDamage, isMultiplier, this); 
+		_falling.SetValues (damageRange, onScreenTime, maxDamage, isMultiplier, delayMax, this); 
 	}
 	public void Chosen(float _damageToDo){
 		World.T.ChosenInsult (this, _damageToDo); 
 		World.T.NextInsultChunk (this); 
+		World.T.SpawnFullInsultText (); 
 	}
 
 	void Awake(){

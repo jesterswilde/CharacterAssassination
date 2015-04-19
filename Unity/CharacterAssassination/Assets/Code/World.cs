@@ -11,7 +11,7 @@ public class World : MonoBehaviour {
 	List<int> _availableSlots = new List<int>(); 
 	GerminationPoint[] _allGerms; 
 	GerminationPoint _currentGerm; 
-	bool _insultMode = false; 
+	public bool _insultMode = false; 
 
 	public Object fallingPrefab;
 	public Object germUIPrefab; 
@@ -20,20 +20,21 @@ public class World : MonoBehaviour {
 	public Text fullInsult; 
 	public Text damageText; 
 	public Text totalDamageText; 
+	public Object insultChunkTextPrefab; 
+	public Object hitboxPrefab; 
+	GameObject _insultChunkText; 
 	public static World T; 
 	float _germDamage; 
 	float _totalDamage; 
 	int _failureCount = 0; 
+	InsultChunk _currentChunk;
 
 	public void NextInsultChunk(InsultChunk _chunk){
-		foreach (FallingInsult _fallInsult in _insults) {
-			if(_fallInsult != null){
-				Destroy(_fallInsult.gameObject);
-			}
-		}
 		ClearChunks ();  
-		Debug.Log ("Next insult chunk - " + _chunk); 
-		foreach(InsultChunk _child in _chunk.ChildInsults){
+		_currentChunk = _chunk; 
+	}
+	void StartChunksFalling(){
+		foreach(InsultChunk _child in _currentChunk.ChildInsults){
 			GameObject _fallingGO = (GameObject)Instantiate (fallingPrefab);
 			FallingInsult _falling = _fallingGO.AddComponent<FallingInsult>(); 
 			_child.AssignValues (_falling); 
@@ -48,10 +49,11 @@ public class World : MonoBehaviour {
 		}
 		_germDamage = 0;
 		NextInsultChunk (_chunk); 
+		StartChunksFalling (); 
 	}
 	public void ChosenInsult(InsultChunk _chunk, float _damageToDo){
+		Debug.Log (_damageToDo); 
 		if (_damageToDo != 0) {
-			fullInsult.text += _chunk.fullInsult; 
 			if (!_chunk.isMultiplier) {
 				_germDamage += _damageToDo; 
 				damageText.text += " + " + ((int)_damageToDo).ToString (); 
@@ -68,19 +70,35 @@ public class World : MonoBehaviour {
 		}
 
 	}
+	public void SpawnFullInsultText(){
+		if (_insultChunkText != null) {
+			Destroy (_insultChunkText); 
+		}
+		_insultChunkText = Instantiate(insultChunkTextPrefab) as GameObject;
+		_insultChunkText.GetComponent<FullInsultText> ().Startup (_currentChunk.fullInsult); 
+	}
+
+	public void FullInsultDoneAnimationg(){
+		StartChunksFalling(); 	
+		fullInsult.text += _currentChunk.fullInsult; 
+	}
 	void EndOfInsultChain(){
 		_totalDamage += _germDamage; 
 		totalDamageText.text = ((int)_totalDamage).ToString ();
 		MakeGermList (); 
 	}
 	void ClearChunks(){
+		foreach (FallingInsult _fallInsult in _insults) {
+			if(_fallInsult != null){
+				Destroy(_fallInsult.gameObject);
+			}
+		}
 		_insults = new FallingInsult[6]; 
 		_availableSlots = new List<int>( new int[] {0,1,2,3,4,5}); 
 	}
 	void AssignLocation(FallingInsult _fallInsult){
 		int _rand = Random.Range (0, _availableSlots.Count); 
 		_insults [_availableSlots[_rand]] = _fallInsult; 
-		Debug.Log (_availableSlots.Count + " | " + _availableSlots[_rand]); 
 		float _screenUnit = Screen.width / 8;
 		_fallInsult.transform.SetParent (canvas.transform, false); 
 		_fallInsult.transform.position = new Vector3 (_screenUnit * (_availableSlots[_rand] + 1), Screen.height, 0); 
@@ -175,6 +193,7 @@ public class World : MonoBehaviour {
 	void FailedGerm(){
 		_currentGerm.Failed (); 
 		_failureCount ++; 
+		ClearChunks (); 
 		if (!FailureCheck ()) {
 			MakeGermList();
 		}

@@ -14,18 +14,19 @@ public class FallingInsult : MonoBehaviour {
 	float _timeAlive = 0; 
 	float _randStart; 
 	InsultChunk _chunk; 
+	GameObject _hitTimer; 
+	Animator _anim; 
 
-
-	public void SetValues(Gradient _theGrad, float _time, float _damage, bool _multiplying, InsultChunk _theChunk){
+	public void SetValues(Gradient _theGrad, float _time, float _damage, bool _multiplying, float _theDelay , InsultChunk _theChunk){
 		_damageRange = _theGrad;
 		_timeOnScreen = _time; 
 		_maxDamage = _damage; 
 		_isMultiplier = _multiplying; 
-		_randStart = Random.Range (0f, 2f); 
+		_randStart = Random.Range (0f, _theDelay); 
 		_chunk = _theChunk; 
+		SpawnControlAnimationHItbox (); 
 	}
 	public void SetText(string _letter){
-		Debug.Log ("Checking"); 
 		foreach (Transform _child in transform) {
 			if(_child.transform.name == "Letter"){
 				_child.GetComponent<Text>().text = _letter; 
@@ -52,8 +53,23 @@ public class FallingInsult : MonoBehaviour {
 	}
 	float DamageToDo ()
 	{
-		return _damageRange.Evaluate ((_timeAlive - _randStart) / (_timeOnScreen - _randStart)).r * _maxDamage;
+		Debug.Log ((((_timeAlive - _randStart) / (_timeOnScreen)) + " | " + _damageRange.Evaluate ((_timeAlive - _randStart) / (_timeOnScreen - _randStart)).r + " | " + _maxDamage)); 
+		return _damageRange.Evaluate ((_timeAlive - _randStart) / (_timeOnScreen)).r * _maxDamage;
 	}
+	void SpawnControlAnimationHItbox(){
+		_hitTimer = Instantiate (World.T.hitboxPrefab) as GameObject; 
+		_hitTimer.transform.SetParent (transform, false);
+		_anim = _hitTimer.GetComponent<Animator> (); 
+		if (_anim == null)
+			Debug.Log ("No animator"); 
+	}
+	void ControlAnimationHitBox(){
+		if (_anim != null) {
+			Debug.Log (_anim + " | " + _damageRange); 
+			_anim.Play ("timingBox", 0, _damageRange.Evaluate ((_timeAlive - _randStart) / _timeOnScreen).r);  
+		}
+	}
+
 	// Use this for initialization
 	void Start () {
 		_trans = GetComponent<RectTransform> (); 
@@ -67,5 +83,6 @@ public class FallingInsult : MonoBehaviour {
 			_trans.position = new Vector3 (_trans.position.x, _trans.position.y - (Screen.height * Time.deltaTime / _timeOnScreen), _trans.position.z); 
 			CheckForDead (); 
 		}
+		ControlAnimationHitBox ();
 	}
 }
