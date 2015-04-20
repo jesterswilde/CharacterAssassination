@@ -6,7 +6,7 @@ public class Victim : MonoBehaviour {
 
 	public int health; 
 	Animator _anim; 
-	public List<Animation> animations = new List<Animation> (); 
+	public List<string> animations = new List<string> (); 
 	public List<Texture> faces = new List<Texture>(); 
 	public List<Transform> cameraPositions = new List<Transform> (); 
 	public Material faceMaterial; 
@@ -28,17 +28,17 @@ public class Victim : MonoBehaviour {
 	}
 	void PlayHitAnim(float _damageTaken){
 		if (_damageTaken > heavyDamageMin) {
-			_anim.Play (animations [5].name); 
+			_anim.Play (animations [5]); 
 			Camera.main.transform.position = cameraPositions [5].position; 
 			faceMaterial.mainTexture = faces[5]; 
 		}
 		else if (_damageTaken > mediumReactionMin) { 
-			_anim.Play (animations [4].name);
+			_anim.Play (animations [4]);
 			Camera.main.transform.position = cameraPositions [4].position; 
 			faceMaterial.mainTexture = faces[4]; 
 		} 
 		else {
-			_anim.Play(animations[3].name);
+			_anim.Play(animations[3]);
 			Camera.main.transform.position = cameraPositions[3].position; 
 			faceMaterial.mainTexture = faces[3]; 
 		}
@@ -47,18 +47,18 @@ public class Victim : MonoBehaviour {
 	void ReturnToIdleAnim(){
 		if (health < dyingIdlMaxHP) {
 			Camera.main.transform.position = cameraPositions[2].position;
-			_anim.Play(animations[2].name); 
+			_anim.Play(animations[2]); 
 			faceMaterial.mainTexture = faces[2]; 
 			return;
 		}
 		if (health < woundedIdleMaxHP) {
 			Camera.main.transform.position = cameraPositions[1].position;
-			_anim.Play(animations[1].name); 
+			_anim.Play(animations[1]); 
 			faceMaterial.mainTexture = faces[1]; 
 			return;
 		}
 		Camera.main.transform.position = cameraPositions [0].position; 
-		_anim.Play (animations [0].name); 
+		_anim.Play (animations [0]); 
 		faceMaterial.mainTexture = faces[0]; 
 	}
 	void Start(){
