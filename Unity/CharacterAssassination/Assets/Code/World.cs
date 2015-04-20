@@ -22,6 +22,7 @@ public class World : MonoBehaviour {
 	public Text totalDamageText; 
 	public Object insultChunkTextPrefab; 
 	public Object hitboxPrefab; 
+	public Victim chetGoldman; 
 	GameObject _insultChunkText; 
 	public static World T; 
 	float _germDamage; 
@@ -36,7 +37,7 @@ public class World : MonoBehaviour {
 	void StartChunksFalling(){
 		foreach(InsultChunk _child in _currentChunk.ChildInsults){
 			GameObject _fallingGO = (GameObject)Instantiate (fallingPrefab);
-			FallingInsult _falling = _fallingGO.AddComponent<FallingInsult>(); 
+			FallingInsult _falling = _fallingGO.GetComponent<FallingInsult>();  
 			_child.AssignValues (_falling); 
 			AssignLocation(_falling); 
 		}
@@ -85,7 +86,8 @@ public class World : MonoBehaviour {
 	void EndOfInsultChain(){
 		_totalDamage += _germDamage; 
 		totalDamageText.text = ((int)_totalDamage).ToString ();
-		MakeGermList (); 
+		chetGoldman.TakeDamage ((int)_germDamage); 
+		Invoke ("MakeGermList", 1.5f);  
 	}
 	void ClearChunks(){
 		foreach (FallingInsult _fallInsult in _insults) {
