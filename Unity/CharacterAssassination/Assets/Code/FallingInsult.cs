@@ -82,7 +82,7 @@ public class FallingInsult : MonoBehaviour {
 	}
 	void BlendColors(){
 		if (timingBox != null && hitBox != null) {
-			float _percentDone = Mathf.Max (0, _timeAlive - _randStart - (_timeOnScreen / 2)) / _timeOnScreen / 2;
+			float _percentDone = Mathf.Max (0, _timeAlive - _randStart - (_timeOnScreen / 2)) / (_timeOnScreen / 2);
 			Debug.Log(_percentDone); 
 			 _finalColor = hitColor * _percentDone + missColor * (1 - _percentDone); 
 			//timingBox.color = new Color(_finalColor.r, _finalColor.b, _finalColor.g, timingBox.color.a); 
