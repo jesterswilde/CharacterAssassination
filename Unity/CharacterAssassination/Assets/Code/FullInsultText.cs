@@ -5,7 +5,7 @@ using UnityEngine.UI;
 public class FullInsultText : MonoBehaviour {
 
 	float _aliveTime = 0 ; 
-	float _waitDuration = .6f;
+	float _waitDuration = 2.7f;
 
 	public void Startup(string _text){
 		transform.SetParent (World.T.canvas.transform, false); 
