@@ -35,6 +35,7 @@ public class Victim : MonoBehaviour {
 			Camera.main.transform.rotation = cameraPositions [5].rotation; 
 			transform.position = victimPos[5].position; 
 			faceMaterial.mainTexture = faces[5]; 
+			World.T.PlayRandomSoundFromList(World.T.soundHolder.hardHitSounds); 
 		}
 		else if (_damageTaken > mediumReactionMin) { 
 			_anim.Play (animations [4]);
@@ -42,6 +43,7 @@ public class Victim : MonoBehaviour {
 			Camera.main.transform.rotation = cameraPositions [4].rotation; 
 			transform.position = victimPos[4].position; 
 			faceMaterial.mainTexture = faces[4]; 
+			World.T.PlayRandomSoundFromList(World.T.soundHolder.mediumHitSounds); 
 		} 
 		else {
 			_anim.Play(animations[3]);
@@ -49,6 +51,7 @@ public class Victim : MonoBehaviour {
 			Camera.main.transform.rotation = cameraPositions [3].rotation; 
 			transform.position = victimPos[3].position; 
 			faceMaterial.mainTexture = faces[3]; 
+			World.T.PlayRandomSoundFromList(World.T.soundHolder.lightHitSounds); 
 		}
 		Invoke ("ReturnToIdleAnim", 1.5f); 
 	}

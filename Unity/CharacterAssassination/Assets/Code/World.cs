@@ -29,6 +29,12 @@ public class World : MonoBehaviour {
 	float _totalDamage; 
 	int _failureCount = 0; 
 	InsultChunk _currentChunk;
+	MeshRenderer[] _officeMeshes; 
+	public GameObject actionLineGO; 
+	public GameObject officeGO; 
+	public NoiseHolder soundHolder; 
+	public AudioSource soundMaker;
+	MeshRenderer[] _actionMeshes; 
 
 	public void NextInsultChunk(InsultChunk _chunk){
 		ClearChunks ();  
@@ -84,6 +90,7 @@ public class World : MonoBehaviour {
 		fullInsult.text += _currentChunk.fullInsult; 
 	}
 	void EndOfInsultChain(){
+		TurnOffOffice (); 
 		_totalDamage += _germDamage; 
 		totalDamageText.text = ((int)_totalDamage).ToString ();
 		chetGoldman.TakeDamage ((int)_germDamage); 
@@ -176,11 +183,13 @@ public class World : MonoBehaviour {
 	}
 	public void SelectGerm(GerminationPoint _germ){
 		_currentGerm = _germ;
+		PlaySound (soundHolder.selection); 
 	}
 	void CollectAllGerms(){
 		_allGerms = FindObjectsOfType<GerminationPoint> (); 
 	}
 	void MakeGermList(){
+		TurnOnOffice (); 
 		_currentGerms = new GerminationPoint[6];
 		int _pos = 0; 
 		_insultMode = false; 
@@ -193,6 +202,7 @@ public class World : MonoBehaviour {
 		}
 	}
 	void FailedGerm(){
+		PlaySound (soundHolder.badHit); 
 		_currentGerm.Failed (); 
 		_failureCount ++; 
 		ClearChunks (); 
@@ -215,15 +225,48 @@ public class World : MonoBehaviour {
 			_germ.TurnOff(); 
 		}
 	}
+	void CollectMeshes(){
+		_officeMeshes = officeGO.GetComponentsInChildren<MeshRenderer> (); 
+		_actionMeshes = actionLineGO.GetComponentsInChildren<MeshRenderer> (); 
+	}
+	void TurnOffOffice(){
+		foreach (MeshRenderer _rend in _officeMeshes) {
+			_rend.enabled = false; 
+		}
+		foreach (MeshRenderer _rend in _actionMeshes) {
+			_rend.enabled = true; 
+		}
+	}
+	void TurnOnOffice(){
 
+		foreach (Renderer _rend in _officeMeshes) {
+			_rend.enabled = true; 
+		}
+		foreach (Renderer _rend in _actionMeshes) {
+			_rend.enabled = false; 
+		}
+	}
+
+	public void PlayRandomSoundFromList(List<AudioClip> _clips){
+		int _index = Random.Range (0, _clips.Count); 
+		PlaySound(_clips[_index]);
+	}
+	public void PlaySound(AudioClip _clip){
+		soundMaker.clip = _clip; 
+		soundMaker.Play(); 
+	}
 	// Use this for initialization
 	void Start () {
 		CollectAllGerms (); 
 		MakeGermList (); 
+
+		TurnOnOffice (); 
 	}
 	void Awake(){
 		T = this; 
+		CollectMeshes (); 
 	}
+
 	
 	// Update is called once per frame
 	void Update () {

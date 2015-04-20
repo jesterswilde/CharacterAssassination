@@ -58,6 +58,11 @@ public class FallingInsult : MonoBehaviour {
 	}
 	float DamageToDo ()
 	{
+		if (_damageRange.Evaluate ((_timeAlive - _randStart) / (_timeOnScreen)).r >= .95f) {
+			World.T.PlaySound (World.T.soundHolder.goodHit);
+		} else {
+			World.T.PlaySound (World.T.soundHolder.selection); 
+		}
 		Debug.Log ((((_timeAlive - _randStart) / (_timeOnScreen)) + " | " + _damageRange.Evaluate ((_timeAlive - _randStart) / (_timeOnScreen - _randStart)).r + " | " + _maxDamage)); 
 		return _damageRange.Evaluate ((_timeAlive - _randStart) / (_timeOnScreen)).r * _maxDamage;
 	}
@@ -82,9 +87,12 @@ public class FallingInsult : MonoBehaviour {
 	}
 	void BlendColors(){
 		if (timingBox != null && hitBox != null) {
-			float _percentDone = Mathf.Max (0, _timeAlive - _randStart - (_timeOnScreen / 2)) / (_timeOnScreen / 2);
+			float _percentDone = _damageRange.Evaluate ((_timeAlive - _randStart) / _timeOnScreen).r;
 			Debug.Log(_percentDone); 
-			 _finalColor = hitColor * _percentDone + missColor * (1 - _percentDone); 
+			if(_percentDone > .95f){
+				_finalColor = hitColor;
+			}
+			else _finalColor = missColor; 
 			//timingBox.color = new Color(_finalColor.r, _finalColor.b, _finalColor.g, timingBox.color.a); 
 
 		}
